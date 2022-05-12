@@ -1,21 +1,20 @@
 package com.example.studentcrud.controller;
 
-import java.util.List;
-
 import javax.validation.Valid;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.studentcrud.Response.Response;
-import com.example.studentcrud.entity.Student;
-import com.example.studentcrud.service.Studentservice;
+import com.example.studentcrud.model.StudentModel;
+import com.example.studentcrud.request.dto.StudentRequest;
+import com.example.studentcrud.response.dto.GoodPlatformResponseVO;
+import com.example.studentcrud.response.dto.StudentResponse;
+import com.example.studentcrud.service.StudentService;
+import com.example.studentcrud.utility.Constants;
+import com.example.studentcrud.utility.ResponseHelper;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,30 +22,25 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/student")
 public class Studentcontroller {
-	@Autowired
-	private Studentservice studentservice;
+	private final StudentService studentservice = null;
 
 	@PostMapping("/")
-	public ResponseEntity<?> saveStudent(@Valid @RequestBody Student student) {
-		Student savedstudent = studentservice.addStudent(student);
-		if (null != savedstudent) {
-			return new ResponseEntity<>(new Response(true, "Product Details Saved", savedstudent), HttpStatus.CREATED);
-		} else {
-			return new ResponseEntity<>(new Response(false, "Unable To Save Product Details", savedstudent),
-					HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+	public GoodPlatformResponseVO<StudentResponse> saveStudent(@Valid @RequestBody StudentRequest studentRequest) {
+		log.debug("Studnet Controller- save Student()");
+		StudentResponse addStudent = studentservice.addStudent(studentRequest);
+		log.debug("saved Student" + addStudent);
+
+		return new ResponseHelper().createResponse(new GoodPlatformResponseVO<StudentResponse>(), addStudent,
+				Constants.STUDENT_SAVED_SUCESSFULLY, Constants.STUDENT_NOT_SAVED_EXCEPTION);
 	}
 
 	@GetMapping("/")
-	public ResponseEntity<?> saveStudent() {
-		List<Student> studentList = studentservice.findAllStudents();
+	public GoodPlatformResponseVO<StudentResponse> findAllStudents() {
+		log.debug("Student List- StudentController");
+		StudentModel studentList = studentservice.findAllStudents();
 		log.info("students list{} " + studentList);
-		if (null != studentList && !studentList.isEmpty()) {
-			return new ResponseEntity<>(new Response(true, "Students  List Fetched", studentList), HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(new Response(false, "Unable To Fetch Product List", studentList),
-					HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+		return ResponseHelper.createResponse(new GoodPlatformResponseVO<StudentResponse>(), studentList,
+				Constants.STUDENT_FETCH_SUCESS, Constants.STUDENT_NOT_FOUND_EXCEPTION);
 	}
 
 }

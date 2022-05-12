@@ -1,4 +1,4 @@
-package com.example.studentcrud.dao;
+package com.example.studentcrud.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
