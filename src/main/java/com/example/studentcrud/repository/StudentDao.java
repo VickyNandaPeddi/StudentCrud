@@ -8,5 +8,4 @@ import com.example.studentcrud.entity.Student;
 @Repository
 
 public interface StudentDao extends JpaRepository<Student, Integer> {
-    public boolean existsBySid(int sid);
 }
